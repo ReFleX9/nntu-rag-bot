@@ -1,0 +1,9 @@
+pymupdf
+pytesseract
+Pillow
+python-docx
+openpyxl
+xlrd
+python-pptx
+striprtf
+beautifulsoup4

@@ -1,0 +1,67 @@
+# Local source corpus, downloaded site files, crawl cache and large JSONL output
+/data/
+
+# Vendored Python packages, OCR binaries and local model files
+/vendor/
+**/.venv/
+**/venv/
+**/__pycache__/
+*.py[cod]
+*.model
+*.faiss
+
+# Generated extraction, chunking and RAG artifacts
+**/prepared/
+**/knowledge_base/
+**/results_*/
+**/sample_results_backup/
+**/llm_results_ner/
+**/merged/
+**/resolved/
+**/corpus/
+**/chunks*.jsonl
+**/blocks.jsonl
+**/documents.jsonl
+**/mentions.jsonl
+**/tables.jsonl
+**/issues.jsonl
+**/*.sqlite3
+**/*.db
+
+# Per-run LLM annotation batches and audit exports
+/transcript_extractor/llm_tasks_ner.jsonl
+/transcript_extractor/candidate_audit.csv
+/transcript_extractor/preparation_summary.json
+/transcript_extractor/validation_report.json
+
+# These old output folders contain only Git LFS pointers without local payloads.
+/chanks 7 sent/
+/glasary/
+
+# Local credentials and editor/OS noise
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*.p12
+*.pfx
+.DS_Store
+Thumbs.db
+.ipynb_checkpoints/
+
+# Publish the extracted NNTU text corpus and its audit reports. The original
+# downloads, raw crawl and organized hard-link view stay local.
+!/data/
+/data/*
+!/data/nntu_site/
+/data/nntu_site/*
+!/data/nntu_site/extracted/
+/data/nntu_site/extracted/*
+!/data/nntu_site/extracted/blocks.jsonl
+!/data/nntu_site/extracted/documents.jsonl
+!/data/nntu_site/extracted/errors.jsonl
+!/data/nntu_site/extracted/quality_report.json
+!/data/nntu_site/extracted/quality_report.md
+!/data/nntu_site/extracted/report.json
+!/data/nntu_site/extracted/classification_refinement.json

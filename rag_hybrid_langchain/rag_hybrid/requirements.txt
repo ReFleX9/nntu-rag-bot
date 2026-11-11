@@ -1,0 +1,6 @@
+-r requirements-search.txt
+# Qwen3-compatible Sentence Transformers v5 and Transformers v4.
+sentence-transformers>=5.1,<6
+transformers>=4.51,<5
+# Install your CUDA-enabled PyTorch separately first, if required.
+torch>=2.6,<3

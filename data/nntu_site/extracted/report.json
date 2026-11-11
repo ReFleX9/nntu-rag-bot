@@ -1,0 +1,54 @@
+{
+  "created_at": "2026-11-11T05:12:30+0300",
+  "unique_files_selected": 27,
+  "html_selected": 0,
+  "stats_this_run": {
+    "skipped_resume": 18,
+    "errors": 9
+  },
+  "stats_cumulative": {
+    "ok": 10389,
+    "empty": 244,
+    "error": 9
+  },
+  "ocr_pages_total": 12513,
+  "blocks_total": 152840,
+  "text_chars_total": 395151246,
+  "by_extension": {
+    ".pdf": 9063,
+    ".xml": 83,
+    ".ppt": 9,
+    ".png": 2,
+    ".jpg": 152,
+    ".xlsx": 30,
+    ".doc": 249,
+    ".pptx": 18,
+    ".docx": 127,
+    ".rtf": 32,
+    ".zip": 7,
+    ".xls": 9,
+    ".html": 861
+  },
+  "by_category": {
+    "02_студентам": 183,
+    "07_об_университете": 679,
+    "01_поступающим": 893,
+    "08_нормативные_и_административные": 538,
+    "99_неопределено_на_проверку": 2297,
+    "06_наука_и_публикации": 3394,
+    "00_медиа_не_для_текста": 154,
+    "04_кампусная_жизнь": 203,
+    "03_образовательные_программы": 2186,
+    "05_преподавателям_и_сотрудникам": 115
+  },
+  "elapsed_seconds_this_run": 5.0,
+  "ocr_dpi": 150,
+  "ocr_workers": 3,
+  "ocr_enabled": true,
+  "versions": {
+    "python": "3.13.3",
+    "pymupdf": "2.1",
+    "tesseract": "5.5.3.20260724"
+  },
+  "policy": "native PDF text first; OCR only if <80 chars with >8% embedded image area, or <250 chars with >35% image area"
+}
