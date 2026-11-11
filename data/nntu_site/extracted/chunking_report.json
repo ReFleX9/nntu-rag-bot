@@ -1,0 +1,48 @@
+{
+  "schema_version": "nntu-rag-chunk-v1",
+  "input_blocks": 152840,
+  "documents_with_chunks": 10389,
+  "chunks": 258769,
+  "needs_review": 1327,
+  "ocr": {
+    "chunks": 16895,
+    "low_confidence_chunks": 996
+  },
+  "by_category": {
+    "04_кампусная_жизнь": 9351,
+    "08_нормативные_и_административные": 22980,
+    "01_поступающим": 20790,
+    "99_неопределено_на_проверку": 20032,
+    "07_об_университете": 11576,
+    "02_студентам": 6592,
+    "06_наука_и_публикации": 111689,
+    "00_медиа_не_для_текста": 7,
+    "05_преподавателям_и_сотрудникам": 4794,
+    "03_образовательные_программы": 50958
+  },
+  "by_kind": {
+    "ocr_prose": 16886,
+    "prose": 215969,
+    "list": 589,
+    "table": 1986,
+    "html": 23338,
+    "link": 1
+  },
+  "length_chars": {
+    "min": 1,
+    "median": 1457,
+    "p95": 2240,
+    "max": 2300
+  },
+  "token_count": "null: measured later with the selected embedding tokenizer",
+  "spelling_policy": "No guessed OCR spelling changes; conservative Unicode cleanup only; low-confidence OCR flagged.",
+  "policy": {
+    "HTML": "1500 chars; link cards atomic; remove cookie notice and javascript:void(0) controls",
+    "admissions_students_administration": "1750 chars",
+    "educational_programs": "2100 chars",
+    "science_university": "2300 chars",
+    "other": "2000 chars",
+    "overlap": "0; neighbor IDs preserve context",
+    "tables": "keep extracted rows intact and group to the selected character budget"
+  }
+}

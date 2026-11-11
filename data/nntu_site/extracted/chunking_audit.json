@@ -1,0 +1,64 @@
+{
+  "input": "data\\nntu_site\\extracted\\chunks.jsonl",
+  "chunks": 258769,
+  "documents": 10389,
+  "unique_chunk_ids": 258769,
+  "duplicate_text_chunks_beyond_first": 63305,
+  "length_chars": {
+    "min": 1,
+    "median": 1457,
+    "p95": 2240,
+    "max": 2300
+  },
+  "by_category": {
+    "04_кампусная_жизнь": 9351,
+    "08_нормативные_и_административные": 22980,
+    "01_поступающим": 20790,
+    "99_неопределено_на_проверку": 20032,
+    "07_об_университете": 11576,
+    "02_студентам": 6592,
+    "06_наука_и_публикации": 111689,
+    "00_медиа_не_для_текста": 7,
+    "05_преподавателям_и_сотрудникам": 4794,
+    "03_образовательные_программы": 50958
+  },
+  "by_kind": {
+    "ocr_prose": 16886,
+    "prose": 215969,
+    "list": 589,
+    "table": 1986,
+    "html": 23338,
+    "link": 1
+  },
+  "by_extension": {
+    ".pdf": 226184,
+    ".png": 2,
+    ".jpg": 5,
+    ".xlsx": 1474,
+    ".pptx": 404,
+    ".docx": 741,
+    ".rtf": 538,
+    ".xls": 16,
+    ".html": 23339,
+    ".doc": 3227,
+    ".zip": 2839
+  },
+  "by_source_type": {
+    "file": 235430,
+    "html": 23339
+  },
+  "ocr_confidence_bands": {
+    "85_plus": 13335,
+    "60_to_85": 2467,
+    "low_<60": 996,
+    "unscored": 97
+  },
+  "quality_flags": {
+    "low_ocr_confidence": 1034,
+    "replacement_character": 293
+  },
+  "token_count_missing": 258769,
+  "neighbor_chain_issues": {},
+  "errors": [],
+  "error_count": 0
+}

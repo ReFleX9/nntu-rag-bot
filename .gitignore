@@ -59,8 +59,12 @@ Thumbs.db
 !/data/nntu_site/extracted/
 /data/nntu_site/extracted/*
 !/data/nntu_site/extracted/blocks.jsonl
+!/data/nntu_site/extracted/chunks.jsonl
 !/data/nntu_site/extracted/documents.jsonl
 !/data/nntu_site/extracted/errors.jsonl
+!/data/nntu_site/extracted/chunking_audit.json
+!/data/nntu_site/extracted/chunking_report.json
+!/data/nntu_site/extracted/qwen_token_audit.json
 !/data/nntu_site/extracted/quality_report.json
 !/data/nntu_site/extracted/quality_report.md
 !/data/nntu_site/extracted/report.json
