@@ -88,7 +88,7 @@ def audit_chunks(rows: list[dict[str, Any]]) -> dict[str, Any]:
             current = ids.get(current.get("next_chunk_id"))
         if len(starts) != 1 or len(reached) != len(group) or current is not None:
             issues["incomplete_neighbor_chain"].append(doc_id)
-    lengths = sorted(r.get("token_count", 0) for r in rows)
+    lengths = sorted(r["token_count"] for r in rows if isinstance(r.get("token_count"), int))
     hashes = [hashlib.sha256(r["text"].encode("utf-8")).hexdigest() for r in rows]
     return {
         "chunks": len(rows), "documents": len(by_document),
@@ -101,7 +101,8 @@ def audit_chunks(rows: list[dict[str, Any]]) -> dict[str, Any]:
         "without_section": sum(not r.get("section_title") for r in rows),
         "stated_tokens": {"min": lengths[0], "median": lengths[len(lengths)//2],
                           "p95": lengths[int((len(lengths)-1)*.95)], "max": lengths[-1],
-                          "sum": sum(lengths)},
+                          "sum": sum(lengths)} if lengths else None,
+        "missing_token_counts": len(rows) - len(lengths),
         "issues": {key: {"count": len(value), "examples": value[:8]}
                    for key, value in issues.items()},
     }
@@ -130,6 +131,11 @@ def select_chunks(rows: list[dict[str, Any]], *, min_ocr_confidence: float | Non
 
 def index_text(row: dict[str, Any]) -> str:
     """Метаданные для поиска; исходный text и citation_label остаются прежними."""
+    if row.get("schema_version") == "nntu-rag-chunk-v1":
+        labels = [f"Документ: {row['title']}"] if row.get("title") else []
+        if row.get("section_title"):
+            labels.append(f"Раздел: {row['section_title']}")
+        return "\n\n".join(["\n".join(labels), row["text"]]) if labels else row["text"]
     source = row["document_id"].replace("\\", "/")
     filename = source.rsplit("/", 1)[-1]
     # Strip only the pipeline's 12-character SHA filename prefix.

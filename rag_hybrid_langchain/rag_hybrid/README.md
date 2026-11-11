@@ -10,6 +10,39 @@ PDF-страница, раздел, тип, OCR-признаки и исходн
 
 ## Как работает поиск
 
+Для корпуса НГТУ используйте модель `Qwen/Qwen3-Embedding-0.6B` из
+`vendor/nntu-models/qwen3-embedding-0.6b` и локальную Ollama с моделью
+`nntu-qwen:4b`. Команда `ask` по умолчанию определяет язык вопроса,
+переводит запрос на русский для поиска и отвечает на исходном языке.
+Язык можно задать явно через `--language ru|en|tk|uz`. Для `ru` перевод пропускается.
+
+Пример из корня проекта после установки зависимостей в `vendor/nntu-deps`:
+
+```powershell
+$env:PYTHONPATH = (Resolve-Path vendor/nntu-deps).Path
+$env:OLLAMA_MODELS = Join-Path (Get-Location) 'vendor/nntu-ollama/models'
+$env:OLLAMA_HOST = '127.0.0.1:11434'
+$env:OLLAMA_NO_CLOUD = '1'
+# Запустить в отдельном терминале, если Ollama ещё не работает:
+.\vendor\nntu-ollama\ollama.exe serve
+```
+
+В терминале поиска из корня проекта:
+
+```powershell
+$env:PYTHONPATH = (Resolve-Path vendor/nntu-deps).Path
+$env:USE_TF = '0'
+$rag = 'rag_hybrid_langchain/rag_hybrid'
+$corpus = 'data/nntu_site/extracted'
+$model = 'vendor/nntu-models/qwen3-embedding-0.6b'
+python -S -X utf8 "$rag/nntu_token_audit.py" "$corpus/chunks.jsonl" --tokenizer-path $model --output "$corpus/qwen_token_audit.json"
+python -S -X utf8 "$rag/kb.py" build --chunks "$corpus/chunks.jsonl" --out "$corpus/knowledge_base" --model $model --revision 97b0c614be4d77ee51c0cef4e5f07c00f9eb65b3 --local-files-only --device cpu --max-length 2400 --instruction 'Retrieve the passage that directly answers the question about Nizhny Novgorod State Technical University.'
+python -S -X utf8 "$rag/kb.py" ask --index "$corpus/knowledge_base" --local-files-only --llm-model nntu-qwen:4b --num-ctx 4096 --max-context-chars 5000 --query 'Where can I find the class schedule?'
+```
+
+Аудит токенов требует Python 3.12 или новее. На текущем корпусе максимальная
+длина входа составляет 2 310 токенов, поэтому для сборки выбран лимит 2 400.
+
 1. Для индексации к тексту добавляются имя PDF, папка продукта и известный раздел.
 2. `Qwen/Qwen3-Embedding-0.6B` строит нормализованные векторы. Инструкция добавляется
    только к вопросу, согласно формату модели.
