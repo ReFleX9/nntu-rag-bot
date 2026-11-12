@@ -3,6 +3,7 @@
 
 # Vendored Python packages, OCR binaries and local model files
 /vendor/
+/work/
 **/.venv/
 **/venv/
 **/__pycache__/
