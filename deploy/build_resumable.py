@@ -7,6 +7,7 @@ import json
 import os
 import sys
 import tempfile
+import time
 from datetime import datetime, timezone
 from pathlib import Path
 
@@ -80,6 +81,8 @@ def main() -> None:
     root = args.out.resolve()
     root.mkdir(parents=True, exist_ok=True)
     source_hash = sha256_file(source)
+    with source.open(encoding="utf-8-sig") as counter:
+        total_rows = sum(1 for _ in counter)
     config = EmbeddingConfig(model="Qwen/Qwen3-Embedding-0.6B",
                              revision="97b0c614be4d77ee51c0cef4e5f07c00f9eb65b3",
                              max_length=2400,
@@ -99,6 +102,8 @@ def main() -> None:
     embedder = None
     shards = []
     total = 0
+    newly_built = 0
+    started = time.monotonic()
     with source.open(encoding="utf-8-sig") as stream:
         number = 0
         while True:
@@ -130,8 +135,11 @@ def main() -> None:
                                 block_size=args.batch_size)
                 finally:
                     part.unlink(missing_ok=True)
-                print(f"Checkpoint {shard.name}: {len(lines)} vectors, total {total + len(lines)}",
-                      flush=True)
+                newly_built += len(lines)
+                rate = newly_built / max(time.monotonic() - started, 1)
+                remaining_hours = (total_rows - total - len(lines)) / rate / 3600
+                print(f"Checkpoint {shard.name}: {total + len(lines)}/{total_rows} vectors; "
+                      f"{rate:.1f} vectors/s; ETA {remaining_hours:.1f} h", flush=True)
             shards.append(shard)
             total += len(lines)
             number += 1
