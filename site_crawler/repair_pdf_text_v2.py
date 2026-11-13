@@ -5,6 +5,7 @@ from __future__ import annotations
 import argparse
 import json
 import os
+import shutil
 import sys
 from collections import Counter, defaultdict
 from concurrent.futures import ThreadPoolExecutor
@@ -63,6 +64,7 @@ def main():
     parser.add_argument("--root", type=Path, default=ROOT / "data/nntu_site")
     parser.add_argument("--candidates", type=Path, default=ROOT / "work/v2/ocr_candidates.jsonl")
     parser.add_argument("--output", type=Path, default=ROOT / "work/v2/ocr_repairs.jsonl")
+    parser.add_argument("--backup", type=Path, help="Checkpoint copy, refreshed every 50 pages and at completion")
     parser.add_argument("--dpi", type=int, default=200)
     parser.add_argument("--workers", type=int, default=3)
     parser.add_argument("--only", help="Substring of source PDF filename for a pilot")
@@ -117,6 +119,11 @@ def main():
                             target.flush()
                             os.fsync(target.fileno())
                             print("checkpoint", sum(counts.values()), dict(counts), flush=True)
+                            if args.backup and sum(counts.values()) % 50 == 0:
+                                args.backup.parent.mkdir(parents=True, exist_ok=True)
+                                temporary = args.backup.with_suffix(args.backup.suffix + ".partial")
+                                shutil.copyfile(args.output, temporary)
+                                os.replace(temporary, args.backup)
                         if args.limit and sum(counts.values()) >= args.limit:
                             break
             except Exception as error:
@@ -126,6 +133,11 @@ def main():
                 break
         target.flush()
         os.fsync(target.fileno())
+    if args.backup:
+        args.backup.parent.mkdir(parents=True, exist_ok=True)
+        temporary = args.backup.with_suffix(args.backup.suffix + ".partial")
+        shutil.copyfile(args.output, temporary)
+        os.replace(temporary, args.backup)
     print(json.dumps(counts, ensure_ascii=False, indent=2))
 
 
