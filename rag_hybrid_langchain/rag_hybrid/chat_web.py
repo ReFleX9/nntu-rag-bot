@@ -4,6 +4,7 @@ from __future__ import annotations
 import argparse
 import json
 import logging
+import re
 import secrets
 import threading
 from http import HTTPStatus
@@ -66,12 +67,25 @@ def question_args(base: SimpleNamespace, language: str, depth: str) -> SimpleNam
     return SimpleNamespace(**{**vars(base), **DEPTHS[depth], "language": language})
 
 
-def public_sources(sources: list[dict]) -> list[dict]:
-    return [{"number": item["number"],
-             "label": item.get("citation_label") or item.get("title") or item.get("document_id"),
-             "url": next((url for url in item.get("source_urls") or []
-                          if isinstance(url, str) and url.startswith(("https://", "http://"))), None)}
-            for item in sources]
+def public_sources(sources: list[dict], answer_text: str) -> list[dict]:
+    cited = {int(number) for number in re.findall(r"\[(\d+)\]", answer_text)}
+    result, seen = [], set()
+    for item in sources:
+        if item["number"] not in cited:
+            continue
+        url = next((url for url in item.get("source_urls") or []
+                    if isinstance(url, str) and url.startswith(("https://", "http://"))), None)
+        page = item.get("page")
+        if url and url.lower().split("?", 1)[0].endswith(".pdf") and isinstance(page, int) and page > 0:
+            url = url.split("#", 1)[0] + f"#page={page}"
+        key = (url, page)
+        if key in seen:
+            continue
+        seen.add(key)
+        result.append({"number": item["number"],
+                       "label": item.get("citation_label") or item.get("title") or item.get("document_id"),
+                       "url": url})
+    return result
 
 
 def make_handler(kb, base: SimpleNamespace, token: str):
@@ -129,7 +143,7 @@ def make_handler(kb, base: SimpleNamespace, token: str):
             try:
                 result = answer(kb, question, question_args(base, language, depth))
                 self.send_json(HTTPStatus.OK, {
-                    "answer": result["answer"], "sources": public_sources(result["sources"]),
+                    "answer": result["answer"], "sources": public_sources(result["sources"], result["answer"]),
                     "retrieval_seconds": result["retrieval_seconds"],
                     "answer_language": result["answer_language"],
                 })
