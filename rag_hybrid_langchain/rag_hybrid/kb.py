@@ -71,7 +71,8 @@ def answer(kb, question: str, args) -> dict:
     from langchain_ollama import ChatOllama
 
     llm = ChatOllama(model=args.llm_model, base_url=args.ollama_url,
-                     temperature=0, num_ctx=args.num_ctx, num_predict=256, reasoning=False)
+                     temperature=0, num_ctx=args.num_ctx,
+                     num_predict=getattr(args, "num_predict", 256), reasoning=False)
     language = args.language
     search_query = question
     if language != "ru":
