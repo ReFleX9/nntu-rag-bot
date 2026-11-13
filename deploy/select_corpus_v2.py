@@ -93,7 +93,29 @@ def main():
             output.write(line)
         output.flush()
         os.fsync(output.fileno())
-    os.replace(temp, args.output)
+    # Filtering can remove a chunk between two retained chunks. Rebuild neighbor
+    # pointers against the selected set so context expansion never follows a
+    # link to a document that is absent from this index.
+    by_document = defaultdict(list)
+    with temp.open(encoding="utf-8") as selected:
+        for line in selected:
+            row = json.loads(line)
+            by_document[row["document_id"]].append(row["chunk_id"])
+    links = {}
+    for ids in by_document.values():
+        for i, chunk_id in enumerate(ids):
+            links[chunk_id] = (ids[i - 1] if i else None,
+                               ids[i + 1] if i + 1 < len(ids) else None)
+    linked = args.output.with_suffix(args.output.suffix + ".linked.partial")
+    with temp.open(encoding="utf-8") as selected, linked.open("w", encoding="utf-8", newline="\n") as target:
+        for line in selected:
+            row = json.loads(line)
+            row["prev_chunk_id"], row["next_chunk_id"] = links[row["chunk_id"]]
+            target.write(json.dumps(row, ensure_ascii=False) + "\n")
+        target.flush()
+        os.fsync(target.fileno())
+    os.replace(linked, args.output)
+    temp.unlink()
     report = {"counts": counts, "selected_by_category": by_category, "excluded_examples": examples}
     if args.report:
         args.report.parent.mkdir(parents=True, exist_ok=True)

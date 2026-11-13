@@ -27,6 +27,7 @@ def main() -> None:
     short = 0
     hashes = set()
     duplicates = 0
+    neighbors = {}
     with args.source.open(encoding="utf-8") as stream:
         for line in stream:
             row = json.loads(line)
@@ -34,6 +35,7 @@ def main() -> None:
             sources[row.get("source_type") or "unknown"] += 1
             doc_id = row["document_id"]
             documents[doc_id] += 1
+            neighbors[row["chunk_id"]] = (doc_id, row.get("prev_chunk_id"), row.get("next_chunk_id"))
             url = (row.get("source_urls") or [""])[0]
             examples.setdefault(doc_id, {"title": row.get("title"), "url": url})
             for name, part in ESSENTIAL.items():
@@ -45,10 +47,19 @@ def main() -> None:
             digest = row.get("content_sha256")
             duplicates += digest in hashes
             hashes.add(digest)
+    broken_neighbors = 0
+    for chunk_id, (doc_id, previous, following) in neighbors.items():
+        if previous and (previous not in neighbors or neighbors[previous][0] != doc_id
+                         or neighbors[previous][2] != chunk_id):
+            broken_neighbors += 1
+        if following and (following not in neighbors or neighbors[following][0] != doc_id
+                          or neighbors[following][1] != chunk_id):
+            broken_neighbors += 1
     report = {"chunks": sum(categories.values()), "documents": len(documents),
               "by_category": categories, "by_source_type": sources,
               "low_confidence_ocr_chunks": low_confidence, "short_chunks": short,
-              "exact_text_duplicates": duplicates, "essential_sources": essential,
+              "exact_text_duplicates": duplicates, "broken_neighbor_links": broken_neighbors,
+              "essential_sources": essential,
               "largest_documents": [{"chunks": n, **examples[doc_id]}
                                     for doc_id, n in documents.most_common(20)]}
     if args.output:
