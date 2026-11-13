@@ -90,11 +90,11 @@ journalctl -u nntu-index -f
 ## Ответ на вопрос и вывоз индекса
 
 Для генерации ответов установите [Ollama для Linux](https://ollama.com/download/linux)
-и выполните `ollama pull qwen3:4b`. Из корня репозитория:
+и выполните `ollama pull qwen3:4b-instruct`. Из корня репозитория:
 
 ```bash
 .venv/bin/python rag_hybrid_langchain/rag_hybrid/kb.py ask \
-  --index work/kb-core/index --device cuda --llm-model qwen3:4b \
+  --index work/kb-core/index --device cuda --llm-model qwen3:4b-instruct \
   --language ru --num-ctx 4096 --max-context-chars 5000 \
   --query 'Где найти расписание занятий?'
 ```
@@ -109,7 +109,7 @@ git pull --ff-only
 bash deploy/install_chat.sh
 ```
 
-Скрипт проверит готовый индекс и GPU, установит Ollama, скачает `qwen3:4b`,
+Скрипт проверит готовый индекс и GPU, установит Ollama, скачает `qwen3:4b-instruct`,
 создаст персональный код доступа и включит `nntu-chat.service`. Индекс, модель
 и код доступа лежат на сетевом диске и переживут остановку прерываемой ВМ.
 После нового запуска служба стартует автоматически. База загружается один раз

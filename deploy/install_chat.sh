@@ -21,8 +21,8 @@ if ! command -v ollama >/dev/null 2>&1; then
     curl -fsSL https://ollama.com/install.sh | sh
 fi
 systemctl enable --now ollama
-if ! ollama list | grep -q '^qwen3:4b[[:space:]]'; then
-    ollama pull qwen3:4b
+if ! ollama list | grep -q '^qwen3:4b-instruct[[:space:]]'; then
+    ollama pull qwen3:4b-instruct
 fi
 
 mkdir -p "$project/work"
@@ -46,7 +46,7 @@ WorkingDirectory=$project/rag_hybrid_langchain/rag_hybrid
 Environment=HF_HUB_OFFLINE=1
 Environment=TRANSFORMERS_OFFLINE=1
 Environment=TOKENIZERS_PARALLELISM=false
-ExecStart=$project/.venv/bin/python chat_web.py --index $index --token-file $token_file --host 0.0.0.0 --port $port --device cuda --llm-model qwen3:4b
+ExecStart=$project/.venv/bin/python chat_web.py --index $index --token-file $token_file --host 0.0.0.0 --port $port --device cuda --llm-model qwen3:4b-instruct
 Restart=on-failure
 RestartSec=15
 TimeoutStartSec=300

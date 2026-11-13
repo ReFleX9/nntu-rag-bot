@@ -149,7 +149,7 @@ def main():
     parser.add_argument("--host", default="127.0.0.1")
     parser.add_argument("--port", type=int, default=8080)
     parser.add_argument("--device", default="cuda")
-    parser.add_argument("--llm-model", default="qwen3:4b")
+    parser.add_argument("--llm-model", default="qwen3:4b-instruct")
     parser.add_argument("--ollama-url", default="http://127.0.0.1:11434")
     args = parser.parse_args()
     logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(message)s")
