@@ -3,8 +3,10 @@
 from __future__ import annotations
 
 import argparse
+import datetime
 import json
 import os
+import re
 from collections import Counter, defaultdict
 from pathlib import Path
 from urllib.parse import unquote, urlsplit
@@ -31,6 +33,19 @@ def reason(row: dict) -> str | None:
         return "media_archive"
     if any(x in path for x in UNRELATED):
         return "unrelated_section"
+    if "/otsenka_kach_od/vnutr_sistema_ok_obr/rezultaty/" in path:
+        return "survey_reports_separate_index"
+    if any(x in path for x in ("/security/gochs/posobiya/", "/security/antinark/")):
+        return "general_safety_manuals"
+    if "/universitet/security/" in path:
+        return "general_security_archive"
+    if "/otsenka_kach_od/nok_obr/" in path:
+        return "quality_monitoring_reports"
+    if any(x in path for x in ("plan_vosp_rab", "calendarn_plan_vosp_rab", "/plan_year/")):
+        return "annual_plans_separate_index"
+    admission_year = re.search(r"/abiturientam/(20\d\d)/", path)
+    if admission_year and int(admission_year.group(1)) < datetime.date.today().year:
+        return "archived_admissions_year"
     category = row.get("category") or ""
     if category.startswith("03_"):
         return "program_materials_separate_index"
