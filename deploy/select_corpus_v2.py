@@ -23,6 +23,10 @@ def reason(row: dict) -> str | None:
         return "too_short"
     url = unquote((row.get("source_urls") or [""])[0]).lower()
     path = urlsplit(url).path
+    if row.get("source_type") == "html" and path in {"", "/"}:
+        return "home_navigation"
+    if row.get("source_type") == "html" and row.get("document_length_chars", 0) > 100_000:
+        return "oversized_directory_separate_index"
     if any(x in path for x in MEDIA):
         return "media_archive"
     if any(x in path for x in UNRELATED):
@@ -38,7 +42,7 @@ def reason(row: dict) -> str | None:
         return "unrelated_administration"
     if category.startswith("07_") and row.get("source_type") != "html" and not any(x in path for x in NORMATIVE):
         return "unrelated_university_file"
-    if row.get("is_ocr") and row.get("ocr_confidence") is not None and row["ocr_confidence"] < 55:
+    if row.get("is_ocr") and row.get("ocr_confidence") is not None and row["ocr_confidence"] < 60:
         return "low_ocr_confidence"
     return None
 
@@ -54,10 +58,17 @@ def main():
     args.output.parent.mkdir(parents=True, exist_ok=True)
     temp = args.output.with_suffix(args.output.suffix + ".partial")
     counts, examples, by_category = Counter(), defaultdict(list), Counter()
+    seen_text = set()
     with args.source.open(encoding="utf-8") as source, temp.open("w", encoding="utf-8", newline="\n") as output:
         for line in source:
             row = json.loads(line)
             why = reason(row)
+            if not why:
+                digest = row.get("content_sha256")
+                if digest and digest in seen_text:
+                    why = "duplicate_text"
+                elif digest:
+                    seen_text.add(digest)
             counts[why or "selected"] += 1
             if why:
                 if len(examples[why]) < 5:

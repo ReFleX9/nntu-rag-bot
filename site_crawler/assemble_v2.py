@@ -5,10 +5,17 @@ from __future__ import annotations
 import argparse
 import json
 import os
+import re
 from collections import Counter
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
+
+
+def page_title(title: str) -> str:
+    """Keep the page heading, dropping the repeated university suffix."""
+    title = re.split(r"\s*\|\s*(?:НГТУ им\.|Нижегородский государственный|NNSTU n\.a\.)", title, maxsplit=1)[0]
+    return title.strip() or "НГТУ"
 
 
 def rows(path: Path):
@@ -71,6 +78,7 @@ def main():
             if block:
                 doc["category"] = block["category"]
                 doc["text_chars"] = len(block["text"])
+                doc["filename"] = page_title(block.get("title") or doc.get("filename") or "")
             yield doc
 
     write_atomic(destination / "documents.jsonl", documents())

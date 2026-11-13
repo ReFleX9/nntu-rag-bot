@@ -98,6 +98,7 @@ def units_for(b):
 
 def chunk_doc(doc_id,blocks,doc):
     grouped=[]; cur=[]; nchar=0; boundary=None; section=None
+    document_length_chars=sum(len(b.get("text") or "") for b in blocks)
     def flush():
         nonlocal cur,nchar
         if cur:grouped.append(cur);cur=[];nchar=0
@@ -136,6 +137,7 @@ def chunk_doc(doc_id,blocks,doc):
           "kind":kind,"text":text,"sources":refs,"token_count":None,"length_chars":len(text),
           "is_ocr":bool(isocr),"ocr_confidence":confidence,"quality_flags":flags,
           "document_status":doc.get("status","ok"),"indexable":True,"indexing_exclusions":[],
+          "document_length_chars":document_length_chars,
           "needs_review":bool(flags),"chunk_index":i,"prev_chunk_id":None,"next_chunk_id":None,
           "citation_label":f"{title}, стр. {pages[0]}" if doc.get("extension")==".pdf" else title,
           "content_sha256":hashlib.sha256(text.encode()).hexdigest(),"category":doc.get("category") or b.get("category"),
@@ -153,7 +155,9 @@ def main():
     a=ap.parse_args();root=Path(a.corpus).resolve();ed=root/"extracted"
     dest=Path(a.output).resolve() if a.output else ed/"chunks.jsonl";reportpath=Path(a.report).resolve() if a.report else ed/"chunking_report.json"
     docs={r.get("doc_id"):r for r in rows(ed/"documents.jsonl")}
-    cats={r.get("stored_path"):r.get("category") for r in rows(root/"classification.jsonl")}
+    classification=root/"classification.jsonl"
+    cats=({r.get("stored_path"):r.get("category") for r in rows(classification)}
+          if classification.is_file() else {})
     for d in docs.values():
         if d.get("source_path") in cats:d["category"]=cats[d["source_path"]]
     counts=Counter();lens=[];bycat=Counter();bykind=Counter();ocr=Counter();chunk_docs=set()
