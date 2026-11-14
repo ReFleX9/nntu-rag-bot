@@ -30,7 +30,7 @@ def main() -> None:
     kb = KnowledgeBase.load(args.index, device="cuda", local_files_only=True)
     results = []
     for question, expected in CASES:
-        hits = kb.search(question, top_k=args.top_k, candidate_k=60,
+        hits = kb.search(question, top_k=args.top_k, candidate_k=max(60, args.top_k),
                          bm25_weight=0 if args.mode == "faiss" else 1,
                          faiss_weight=0 if args.mode == "bm25" else 1, rrf_k=60)
         sources = []
