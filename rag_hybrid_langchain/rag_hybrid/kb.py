@@ -78,6 +78,11 @@ def answer(kb, question: str, args) -> dict:
     if language != "ru":
         from nntu_languages import translate_query
         language, search_query = translate_query(llm, question, language)
+    # Users normally mean voluntary withdrawal when asking how to leave.
+    # The formal university policy uses different wording from that question.
+    if re.search(r"\bотчислиться\b", search_query.casefold()) and not re.search(
+            r"по инициативе вуза|за неуспеваемость|за нарушение", search_query.casefold()):
+        search_query += " отчисление по собственному желанию личное заявление ректору"
     result = retrieve(kb, search_query, args)
     result.update(question=question, search_query=search_query, answer_language=language)
     if not result["sources"]:
@@ -89,6 +94,12 @@ def answer(kb, question: str, args) -> dict:
          "К каждому утверждению добавляй номер источника [1], [2] и т.д. "
          "Не смешивай разные документы, учебные годы и версии. Сохраняй URL и коды без изменений. "
          "Для простого вопроса дай прямой ответ в одном или двух предложениях. "
+         "Если спрашивают, где найти сайт или сервис, первым делом укажи адрес наиболее подходящей "
+         "официальной HTML-страницы из поля 'Адрес первоисточника'. Не подменяй адрес страницы "
+         "физическим местом или названием подразделения. "
+         "Описывай действия студента только по источнику, где эти действия указаны явно; "
+         "не переносись с процедуры отчисления вузом на отчисление по желанию студента. "
+         "Игнорируй колонтитулы, печатные штампы и срок действия распечатанной копии документа. "
          "Если сведений недостаточно, прямо сообщи об этом. Учитывай возможные ошибки OCR."),
         ("human", "Вопрос:\n{question}\n\nКонтекст из документации:\n{context}"),
     ])

@@ -336,6 +336,10 @@ def format_context(docs: list[Document], max_chars: int = 24000) -> tuple[str, l
                   f"Путь: {meta['document_id']}\nPDF страница: {meta['page']}\n"
                   f"Раздел: {meta.get('section_title') or 'не указан'}\n"
                   f"Тип: {meta.get('kind')}; chunk_id: {meta['chunk_id']}")
+        source_url = next((url for url in meta.get("source_urls") or []
+                           if isinstance(url, str) and url.startswith(("https://", "http://"))), None)
+        if source_url:
+            header += f"\nАдрес первоисточника: {source_url}"
         if meta.get("is_ocr"):
             header += f"\nOCR confidence: {meta.get('ocr_confidence')}; возможны ошибки распознавания"
         block = header + "\n" + doc.page_content
