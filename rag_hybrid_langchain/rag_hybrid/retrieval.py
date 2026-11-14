@@ -241,6 +241,20 @@ class KnowledgeBase:
                 item = ranking[doc.metadata["chunk_id"]]
                 item.update(faiss_rank=rank, cosine_score=float(score))
                 item["rrf_score"] += faiss_weight / total_weight / (rrf_k + rank)
+        # Questions asking where to go should prefer a relevant website page
+        # over a policy PDF that merely repeats the same terminology.
+        if re.search(r"\b(?:где|найти|открыть|перейти|ссылка|адрес|находится|расположен)\b",
+                     query.casefold()):
+            query_terms = set(tokenize(query))
+            for cid, item in ranking.items():
+                metadata = self.by_id[cid].metadata
+                if metadata.get("source_type") != "html":
+                    continue
+                title_terms = set(tokenize(str(metadata.get("title") or "")))
+                overlap = len(query_terms & title_terms)
+                if overlap >= 2:
+                    item["navigation_boost"] = .008 * overlap
+                    item["rrf_score"] += item["navigation_boost"]
         ranked_ids = sorted(ranking, key=lambda cid: (-ranking[cid]["rrf_score"], cid))
         selected, seen = [], {}
         for cid in ranked_ids:
