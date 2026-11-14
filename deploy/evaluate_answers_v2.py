@@ -27,6 +27,7 @@ def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--index", required=True)
     parser.add_argument("--output", type=Path, required=True)
+    parser.add_argument("--question", action="append", help="Проверить только заданный вопрос; можно повторить")
     args = parser.parse_args()
     settings = SimpleNamespace(index=args.index, chunks=None, mode="hybrid", device="cuda",
                                local_files_only=True, top_k=6, candidate_k=35,
@@ -38,7 +39,7 @@ def main() -> None:
                                num_ctx=8192, num_predict=350)
     kb = load_kb(settings)
     results = []
-    for question in QUESTIONS:
+    for question in args.question or QUESTIONS:
         result = answer(kb, question, settings)
         results.append({"question": question, "answer": result["answer"],
                         "sources": result["sources"],

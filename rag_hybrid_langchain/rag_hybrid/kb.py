@@ -53,7 +53,9 @@ def retrieve(kb, question: str, args) -> dict:
     from retrieval import format_context
     started = time.perf_counter()
     kwargs = search_kwargs(args)
-    if "отчисление по собственному желанию" in question.casefold() and args.mode == "hybrid":
+    if ("отчисление по собственному желанию" in question.casefold()
+            or "процедура перевода обучающегося внутри университета" in question.casefold()) \
+            and args.mode == "hybrid":
         kwargs.update(bm25_weight=.8, faiss_weight=.2)
     hits = kb.search(question, **kwargs)
     expanded = kb.expand_context(hits, neighbors=args.neighbors, filters=kwargs["filters"])
@@ -85,6 +87,9 @@ def answer(kb, question: str, args) -> dict:
     if re.search(r"\bотчислиться\b", search_query.casefold()) and not re.search(
             r"по инициативе вуза|за неуспеваемость|за нарушение", search_query.casefold()):
         search_query = "отчисление по собственному желанию личное заявление"
+    elif re.search(r"перевестись|перевод", search_query.casefold()) and re.search(
+            r"другое направление|другую специальность|другую программу", search_query.casefold()):
+        search_query = "5.11 процедура перевода обучающегося внутри университета с одного направления подготовки на другое"
     result = retrieve(kb, search_query, args)
     result.update(question=question, search_query=search_query, answer_language=language)
     if not result["sources"]:
@@ -108,6 +113,7 @@ def answer(kb, question: str, args) -> dict:
          "физическим местом или названием подразделения. "
          "Описывай действия студента только по источнику, где эти действия указаны явно; "
          "не переносись с процедуры отчисления вузом на отчисление по желанию студента. "
+         "Различай смену направления внутри университета и перевод в другой вуз. "
          "Игнорируй колонтитулы, печатные штампы и срок действия распечатанной копии документа. "
          "Если сведений недостаточно, прямо сообщи об этом. Учитывай возможные ошибки OCR."),
         ("human", "Вопрос:\n{question}\n\nКонтекст из документации:\n{context}"),
