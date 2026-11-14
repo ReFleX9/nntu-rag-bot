@@ -3,7 +3,7 @@
 set -euo pipefail
 
 project=/root/nntu-rag-bot
-index="$project/work/kb-core/index"
+index="${NNTU_CHAT_INDEX:-$project/work/kb-core/index}"
 token_file="$project/work/chat.token"
 port="${NNTU_CHAT_PORT:-8080}"
 
