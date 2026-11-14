@@ -25,12 +25,14 @@ def main() -> None:
     parser.add_argument("--index", type=Path, required=True)
     parser.add_argument("--output", type=Path)
     parser.add_argument("--top-k", type=int, default=10)
+    parser.add_argument("--mode", choices=("hybrid", "bm25", "faiss"), default="hybrid")
     args = parser.parse_args()
     kb = KnowledgeBase.load(args.index, device="cuda", local_files_only=True)
     results = []
     for question, expected in CASES:
         hits = kb.search(question, top_k=args.top_k, candidate_k=60,
-                         bm25_weight=.5, faiss_weight=.5, rrf_k=60)
+                         bm25_weight=0 if args.mode == "faiss" else 1,
+                         faiss_weight=0 if args.mode == "bm25" else 1, rrf_k=60)
         sources = []
         rank = None
         for i, hit in enumerate(hits, 1):
@@ -44,7 +46,7 @@ def main() -> None:
         results.append({"question": question, "expected_url_fragment": expected,
                         "expected_rank": rank, "top_sources": sources})
         print(f"{question} -> expected source rank: {rank}", flush=True)
-    report = {"index": str(args.index), "cases": results,
+    report = {"index": str(args.index), "mode": args.mode, "cases": results,
               "recall_at_10": sum(x["expected_rank"] is not None for x in results) / len(results)}
     if args.output:
         args.output.parent.mkdir(parents=True, exist_ok=True)
