@@ -1,0 +1,216 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#005c99">
+  <title>Ассистент НГТУ — вопросы об университете</title>
+  <style>
+    :root{color-scheme:light;--blue:#0072bc;--blue-deep:#00558c;--navy:#102b42;--red:#9e280e;--ink:#183247;--muted:#647989;--line:#dce7ed;--paper:#fff;--ground:#f3f7f9;--shadow:0 22px 60px rgba(14,58,88,.10)}
+    *{box-sizing:border-box}
+    html{scroll-behavior:smooth}
+    body{margin:0;background:var(--ground);color:var(--ink);font:16px/1.55 system-ui,-apple-system,"Segoe UI",Arial,sans-serif}
+    button,textarea,input,select{font:inherit}
+    button{cursor:pointer}
+    a{color:var(--blue-deep)}
+    a:focus-visible,button:focus-visible,textarea:focus-visible,input:focus-visible,select:focus-visible,summary:focus-visible{outline:3px solid #83c9f5;outline-offset:3px}
+    .shell{width:min(1180px,calc(100% - 48px));margin-inline:auto}
+    .site-header{height:92px;background:#fff;border-bottom:1px solid #e7eef2}
+    .header-inner{height:100%;display:flex;align-items:center;justify-content:space-between;gap:24px}
+    .brand{display:flex;align-items:center;gap:16px;text-decoration:none;color:var(--navy);min-width:0}
+    .brand-mark{width:64px;height:64px;object-fit:contain;flex:none}
+    .brand-copy{display:flex;flex-direction:column;line-height:1.22}
+    .brand-copy strong{font-size:19px;letter-spacing:.015em}
+    .brand-copy span{font-size:12px;color:#617485;margin-top:5px}
+    .header-link{font-size:13px;font-weight:700;text-decoration:none;white-space:nowrap;color:var(--blue-deep);border:1px solid #cbdde8;border-radius:999px;padding:10px 16px;transition:background .2s,border-color .2s}
+    .header-link:hover{background:#edf7fc;border-color:#9ecae3}
+    .hero{position:relative;overflow:hidden;background:linear-gradient(111deg,#006aaa 0%,#075b95 48%,#143f65 100%);color:#fff}
+    .hero:before{content:"";position:absolute;inset:-80px -60px auto auto;width:620px;height:350px;background:repeating-linear-gradient(128deg,transparent 0 43px,rgba(255,255,255,.07) 44px 45px,transparent 46px 82px);transform:rotate(-8deg);pointer-events:none}
+    .hero:after{content:"";position:absolute;right:14%;bottom:-120px;width:320px;height:320px;border:1px solid rgba(255,255,255,.13);border-radius:50%;box-shadow:0 0 0 55px rgba(255,255,255,.035),0 0 0 110px rgba(255,255,255,.025);pointer-events:none}
+    .hero-inner{position:relative;min-height:274px;padding:47px 0 75px;display:flex;flex-direction:column;align-items:flex-start}
+    .eyebrow{display:inline-flex;align-items:center;gap:9px;font-size:11px;font-weight:800;letter-spacing:.14em;text-transform:uppercase;color:#d5eefa}
+    .eyebrow:before{content:"";display:block;width:18px;height:3px;background:#eeb083;border-radius:3px}
+    h1{font-size:clamp(32px,4.2vw,52px);line-height:1.1;letter-spacing:-.035em;margin:20px 0 13px;font-weight:780;max-width:690px}
+    .hero p{font-size:17px;max-width:660px;color:#e0eff8;margin:0;line-height:1.55}
+    .content{display:grid;grid-template-columns:minmax(275px,.85fr) minmax(0,1.6fr);gap:28px;align-items:start;margin-top:-46px;position:relative;padding-bottom:46px}
+    .side{padding:31px 27px 28px;background:#eff5f8;border:1px solid #d8e7ee;border-radius:18px;margin-top:69px}
+    .side h2{font-size:19px;letter-spacing:-.02em;margin:0 0 8px;color:var(--navy)}
+    .side p{font-size:14px;color:#526b7b;margin:0 0 21px}
+    .examples{display:grid;gap:9px}
+    .example{width:100%;text-align:left;padding:12px 15px;display:flex;align-items:center;justify-content:space-between;gap:10px;background:#fff;color:#23445c;border:1px solid #dce9f0;border-radius:10px;font-size:14px;line-height:1.35;transition:transform .15s,border-color .15s,box-shadow .15s}
+    .example:hover{transform:translateY(-2px);border-color:#8ac2e3;box-shadow:0 7px 18px #0b578312}
+    .example span:last-child{color:var(--blue);font-weight:800;font-size:19px;line-height:1}
+    .side-divider{height:1px;background:#d5e4ec;margin:24px 0 19px}
+    .side-note{display:flex;align-items:flex-start;gap:10px;font-size:13px;color:#5c7484;line-height:1.5}
+    .info-dot{display:grid;place-items:center;width:19px;height:19px;flex:none;border-radius:50%;color:var(--blue-deep);background:#d3e9f5;font-weight:800;font-size:12px}
+    .workspace{min-width:0}
+    .card{background:var(--paper);border:1px solid #e3edf2;border-radius:18px;box-shadow:var(--shadow)}
+    .form-card{overflow:hidden}
+    .card-head{display:flex;align-items:flex-start;justify-content:space-between;gap:20px;padding:27px 30px 22px;border-bottom:1px solid #e8eff2}
+    .card-head h2{font-size:22px;line-height:1.25;letter-spacing:-.025em;margin:0 0 5px;color:var(--navy)}
+    .card-head p{font-size:14px;color:var(--muted);margin:0}
+    .card-badge{font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.09em;color:var(--blue-deep);background:#e8f5fb;border:1px solid #c7e4f3;border-radius:999px;padding:7px 10px;white-space:nowrap}
+    .form-body{padding:24px 30px 29px}
+    label{display:block;font-size:13px;font-weight:750;margin-bottom:8px;color:#28475b}
+    .input-hint{font-size:12px;color:#8394a0;font-weight:450;margin-left:5px}
+    textarea,input,select{width:100%;border:1px solid #cddde6;border-radius:10px;background:#fff;color:var(--ink);padding:13px 15px;outline:none;transition:border-color .15s,box-shadow .15s}
+    textarea:focus,input:focus,select:focus{border-color:var(--blue);box-shadow:0 0 0 4px #0072bc1a}
+    textarea{min-height:136px;resize:vertical;line-height:1.55}
+    textarea::placeholder,input::placeholder{color:#9aabb6}
+    .field{margin-bottom:20px}
+    .form-options{border-top:1px solid #e9eff3;padding-top:18px;margin-top:1px}
+    details summary{display:flex;align-items:center;gap:7px;list-style:none;width:max-content;color:var(--blue-deep);font-size:13px;font-weight:750;cursor:pointer}
+    details summary::-webkit-details-marker{display:none}
+    details summary:before{content:"+";display:grid;place-items:center;width:20px;height:20px;border-radius:5px;background:#e8f4fa;color:var(--blue);font-size:17px;line-height:1}
+    details[open] summary:before{content:"−"}
+    .option-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:18px}
+    .option-grid label{margin-bottom:7px}
+    select{min-height:47px;appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='8' viewBox='0 0 14 8'%3E%3Cpath d='m1 1 6 6 6-6' fill='none' stroke='%235b7587' stroke-width='1.6'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 15px center;padding-right:34px}
+    .submit-row{display:flex;align-items:center;gap:18px;flex-wrap:wrap;margin-top:24px}
+    .submit{display:inline-flex;align-items:center;justify-content:center;gap:13px;border:0;border-radius:10px;background:var(--blue);color:white;font-weight:760;padding:13px 21px;min-height:49px;box-shadow:0 9px 18px #0072bc28;transition:background .15s,transform .15s}
+    .submit:hover{background:var(--blue-deep);transform:translateY(-1px)}
+    .submit:disabled{opacity:.65;cursor:wait;transform:none}
+    .submit-arrow{font-size:21px;line-height:0;font-weight:400}
+    .status{font-size:13px;color:var(--muted)}
+    .status.busy:before{content:"";display:inline-block;width:10px;height:10px;border:2px solid #afd9ec;border-top-color:var(--blue);border-radius:50%;margin-right:9px;vertical-align:-2px;animation:spin .8s linear infinite}
+    @keyframes spin{to{transform:rotate(360deg)}}
+    .result-card{margin-top:20px;padding:27px 30px 30px}
+    .result-card h2{font-size:21px;color:var(--navy);margin:0 0 13px;letter-spacing:-.02em}
+    .answer{white-space:pre-wrap;overflow-wrap:anywhere;line-height:1.7;color:#253d4e}
+    .answer.error{color:#a32822}
+    .sources-wrap{border-top:1px solid #e9eff3;margin-top:21px;padding-top:17px}
+    .sources-wrap[hidden],.result-card[hidden]{display:none}
+    .sources-wrap h3{font-size:13px;text-transform:uppercase;letter-spacing:.08em;color:#718898;margin:0 0 9px}
+    .sources{margin:0;padding-left:21px;font-size:14px}
+    .sources li{padding:4px 0;overflow-wrap:anywhere}
+    .sources a{text-decoration:none;font-weight:650}
+    .sources a:hover{text-decoration:underline}
+    .timing{color:#8798a2;font-size:12px;margin:18px 0 0}
+    .site-footer{border-top:1px solid #dfe9ef;background:#fff}
+    .footer-inner{min-height:72px;display:flex;align-items:center;justify-content:space-between;gap:18px;color:#7d909d;font-size:12px}
+    .footer-inner a{text-decoration:none;font-weight:700}
+    @media(max-width:900px){.content{grid-template-columns:1fr}.side{order:2;margin-top:0}.workspace{order:1}.examples{grid-template-columns:repeat(3,1fr)}.hero-inner{min-height:245px}}
+    @media(max-width:680px){.shell{width:min(100% - 28px,1180px)}.site-header{height:76px}.brand-mark{width:52px;height:52px}.brand-copy strong{font-size:17px}.brand-copy span{font-size:10px}.header-link{display:none}.hero-inner{padding:38px 0 70px;min-height:245px}.hero p{font-size:15px}.content{gap:18px;margin-top:-39px}.card-head,.form-body,.result-card{padding-left:21px;padding-right:21px}.card-head{padding-top:22px;padding-bottom:20px}.card-badge{display:none}.side{padding:23px 21px}.examples{grid-template-columns:1fr}.option-grid{grid-template-columns:1fr;gap:13px}.footer-inner{padding:18px 0;align-items:flex-start;flex-direction:column;gap:4px}}
+    @media(prefers-reduced-motion:reduce){*,*:before,*:after{animation-duration:.01ms!important;scroll-behavior:auto!important;transition-duration:.01ms!important}}
+  </style>
+</head>
+<body>
+  <header class="site-header">
+    <div class="shell header-inner">
+      <a class="brand" href="https://www.nntu.ru/" target="_blank" rel="noopener noreferrer" aria-label="Официальный сайт НГТУ">
+        <img class="brand-mark" src="nntu-mark.png" alt="Знак НГТУ" width="64" height="64">
+        <span class="brand-copy"><strong>НГТУ им. Р.Е. Алексеева</strong><span>Нижегородский государственный технический университет</span></span>
+      </a>
+      <a class="header-link" href="https://www.nntu.ru/" target="_blank" rel="noopener noreferrer">Официальный сайт ↗</a>
+    </div>
+  </header>
+  <section class="hero" aria-labelledby="page-title">
+    <div class="shell hero-inner">
+      <span class="eyebrow">Ассистент по материалам университета</span>
+      <h1 id="page-title">Найдём ответ в документах НГТУ</h1>
+      <p>Задайте вопрос о поступлении, учёбе или жизни университета. Ассистент покажет ответ и ссылки на найденные первоисточники.</p>
+    </div>
+  </section>
+  <main class="shell content">
+    <aside class="side" aria-label="Примеры вопросов">
+      <h2>С чего начать?</h2>
+      <p>Выберите пример или задайте свой вопрос. Чем конкретнее формулировка, тем легче найти нужный документ.</p>
+      <div class="examples">
+        <button class="example" type="button" data-question="Где найти расписание занятий для моей группы?"><span>Где найти расписание занятий?</span><span aria-hidden="true">↗</span></button>
+        <button class="example" type="button" data-question="Как подать заявление на перевод на другое направление внутри НГТУ?"><span>Как сменить направление?</span><span aria-hidden="true">↗</span></button>
+        <button class="example" type="button" data-question="Где студенту найти информацию об общежитиях НГТУ?"><span>Где узнать об общежитии?</span><span aria-hidden="true">↗</span></button>
+      </div>
+      <div class="side-divider"></div>
+      <div class="side-note"><span class="info-dot" aria-hidden="true">i</span><span>Для расписаний и сложных таблиц откройте исходный файл и проверьте группу, дату и аудиторию.</span></div>
+    </aside>
+    <div class="workspace">
+      <form id="form" class="card form-card">
+        <div class="card-head"><div><h2>Задайте вопрос</h2><p>Ответ будет составлен по открытым материалам НГТУ.</p></div><span class="card-badge">База знаний</span></div>
+        <div class="form-body">
+          <div class="field"><label for="question">Ваш вопрос</label><textarea id="question" maxlength="1500" placeholder="Например: как перевестись на другое направление внутри университета?" required></textarea></div>
+          <div class="field"><label for="token">Код доступа <span class="input-hint">выдаётся владельцем проекта</span></label><input id="token" type="password" autocomplete="off" placeholder="Введите код для отправки вопроса" required></div>
+          <div class="form-options"><details><summary>Настройки ответа</summary><div class="option-grid"><div><label for="language">Язык ответа</label><select id="language"><option value="auto">Определить автоматически</option><option value="ru">Русский</option><option value="en">English</option><option value="tk">Türkmen</option><option value="uz">O‘zbek</option></select></div><div><label for="depth">Глубина поиска</label><select id="depth"><option value="normal">Обычная</option><option value="detailed">Подробная</option></select></div><!-- SCOPE_SELECTOR --></div></details></div>
+          <div class="submit-row"><button id="submit" class="submit" type="submit">Получить ответ <span class="submit-arrow" aria-hidden="true">↗</span></button><span id="status" class="status" role="status" aria-live="polite"></span></div>
+        </div>
+      </form>
+      <section id="result" class="card result-card" aria-live="polite" hidden><h2>Ответ ассистента</h2><div id="answer" class="answer"></div><div id="sources-wrap" class="sources-wrap" hidden><h3>Первоисточники</h3><ol id="sources" class="sources"></ol></div><p id="timing" class="timing"></p></section>
+    </div>
+  </main>
+  <footer class="site-footer"><div class="shell footer-inner"><span>Учебный проект · ответы могут содержать ошибки, сверяйте сведения с источником.</span><a href="https://www.nntu.ru/" target="_blank" rel="noopener noreferrer">nntu.ru ↗</a></div></footer>
+  <script>
+    const $ = id => document.getElementById(id);
+    $('token').value = sessionStorage.getItem('nntu-chat-token') || '';
+    for (const button of document.querySelectorAll('[data-question]')) {
+      button.addEventListener('click', () => {
+        $('question').value = button.dataset.question;
+        $('question').focus();
+        if (window.matchMedia('(max-width: 900px)').matches) $('form').scrollIntoView({behavior:'smooth',block:'start'});
+      });
+    }
+    $('form').addEventListener('submit', async event => {
+      event.preventDefault();
+      const button = $('submit');
+      const status = $('status');
+      button.disabled = true;
+      status.className = 'status busy';
+      status.textContent = 'Ищу сведения и готовлю ответ…';
+      $('result').hidden = true;
+      try {
+        const token = $('token').value.trim();
+        sessionStorage.setItem('nntu-chat-token', token);
+        const response = await fetch('/api/ask', {
+          method:'POST',
+          headers:{'Content-Type':'application/json','X-Chat-Token':token},
+          body:JSON.stringify({question:$('question').value,language:$('language').value,depth:$('depth').value,scope:$('scope')?.value || 'core'})
+        });
+        const data = await response.json();
+        if (!response.ok) throw Error(data.error || 'Ошибка сервера');
+        $('answer').className = 'answer';
+        $('answer').textContent = data.answer || '';
+        const list = $('sources');
+        list.replaceChildren();
+        for (const source of data.sources || []) {
+          const li = document.createElement('li');
+          const label = '[' + source.number + '] ' + (source.label || 'Источник');
+          if (source.url && /^https?:\/\//i.test(source.url)) {
+            const link = document.createElement('a');
+            link.href = source.url;
+            link.target = '_blank';
+            link.rel = 'noopener noreferrer';
+            link.textContent = label;
+            li.append(link);
+          } else li.textContent = label;
+          list.append(li);
+        }
+        for (const file of data.files || []) {
+          if (!file.url || !/^https?:\/\//i.test(file.url)) continue;
+          const li = document.createElement('li');
+          const link = document.createElement('a');
+          link.href = file.url;
+          link.target = '_blank';
+          link.rel = 'noopener noreferrer';
+          link.textContent = 'Открыть оригинал: ' + file.title;
+          li.append(link);
+          list.append(li);
+        }
+        $('sources-wrap').hidden = !list.children.length;
+        $('timing').textContent = data.retrieval_seconds == null ? '' : 'Поиск: ' + data.retrieval_seconds + ' с';
+        $('result').hidden = false;
+        status.className = 'status';
+        status.textContent = 'Готово';
+      } catch (error) {
+        $('answer').className = 'answer error';
+        $('answer').textContent = error.message;
+        $('sources').replaceChildren();
+        $('sources-wrap').hidden = true;
+        $('timing').textContent = '';
+        $('result').hidden = false;
+        status.className = 'status';
+        status.textContent = '';
+      } finally {
+        button.disabled = false;
+      }
+    });
+  </script>
+</body>
+</html>
