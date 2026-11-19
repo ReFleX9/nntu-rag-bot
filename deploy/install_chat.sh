@@ -4,8 +4,19 @@ set -euo pipefail
 
 project=/root/nntu-rag-bot
 index="${NNTU_CHAT_INDEX:-$project/work/kb-core/index}"
+supplemental="${NNTU_SUPPLEMENTAL_CHUNKS:-}"
+file_catalog="${NNTU_FILE_CATALOG:-}"
 token_file="$project/work/chat.token"
 port="${NNTU_CHAT_PORT:-8080}"
+optional_args=""
+if [[ -n "$supplemental" ]]; then
+    [[ -f "$supplemental" ]] || { echo "Missing JSONL: $supplemental" >&2; exit 1; }
+    optional_args+=" --supplemental-chunks \"$supplemental\""
+fi
+if [[ -n "$file_catalog" ]]; then
+    [[ -f "$file_catalog" ]] || { echo "Missing JSONL: $file_catalog" >&2; exit 1; }
+    optional_args+=" --file-catalog \"$file_catalog\""
+fi
 
 [[ -f "$index/index.faiss" && -f "$index/documents.jsonl" && -f "$index/manifest.json" ]] || {
     echo "Completed index not found at $index" >&2
@@ -46,7 +57,7 @@ WorkingDirectory=$project/rag_hybrid_langchain/rag_hybrid
 Environment=HF_HUB_OFFLINE=1
 Environment=TRANSFORMERS_OFFLINE=1
 Environment=TOKENIZERS_PARALLELISM=false
-ExecStart=$project/.venv/bin/python chat_web.py --index $index --token-file $token_file --host 0.0.0.0 --port $port --device cuda --llm-model qwen3:4b-instruct
+ExecStart=$project/.venv/bin/python chat_web.py --index $index --token-file $token_file --host 0.0.0.0 --port $port --device cuda --llm-model qwen3:4b-instruct$optional_args
 Restart=on-failure
 RestartSec=15
 TimeoutStartSec=300

@@ -13,6 +13,7 @@ from pathlib import Path
 from types import SimpleNamespace
 
 from kb import answer, load_kb
+from file_lookup import find_file
 
 LOG = logging.getLogger(__name__)
 MAX_REQUEST_BYTES = 8192
@@ -52,12 +53,13 @@ button:disabled{opacity:.6;cursor:wait}.answer{white-space:pre-wrap}.sources{pad
 const $=id=>document.getElementById(id); $('token').value=sessionStorage.getItem('nntu-chat-token')||'';
 $('form').addEventListener('submit',async e=>{e.preventDefault();const button=$('submit');button.disabled=true;$('status').textContent='Ищу сведения и готовлю ответ…';$('result').hidden=true;
 try{const token=$('token').value.trim();sessionStorage.setItem('nntu-chat-token',token);
-const response=await fetch('/api/ask',{method:'POST',headers:{'Content-Type':'application/json','X-Chat-Token':token},body:JSON.stringify({question:$('question').value,language:$('language').value,depth:$('depth').value})});
+const response=await fetch('/api/ask',{method:'POST',headers:{'Content-Type':'application/json','X-Chat-Token':token},body:JSON.stringify({question:$('question').value,language:$('language').value,depth:$('depth').value,scope:$('scope')?.value||'core'})});
 const data=await response.json();if(!response.ok)throw Error(data.error||'Ошибка сервера');
 $('answer').textContent=data.answer||'';const list=$('sources');list.replaceChildren();
 for(const source of data.sources||[]){const li=document.createElement('li');const label='['+source.number+'] '+(source.label||'Источник');
 if(source.url&&/^https?:\/\//i.test(source.url)){const a=document.createElement('a');a.href=source.url;a.target='_blank';a.rel='noopener noreferrer';a.textContent=label;li.append(a)}else li.textContent=label;list.append(li)}
-$('timing').textContent='Поиск: '+data.retrieval_seconds+' с';$('result').hidden=false;$('status').textContent='Готово';
+for(const file of data.files||[]){const li=document.createElement('li');const a=document.createElement('a');a.href=file.url;a.target='_blank';a.rel='noopener noreferrer';a.textContent='Открыть оригинал: '+file.title;li.append(a);list.append(li)}
+$('timing').textContent=data.retrieval_seconds==null?'':'Поиск: '+data.retrieval_seconds+' с';$('result').hidden=false;$('status').textContent='Готово';
 }catch(error){$('status').textContent='';$('answer').textContent=error.message;$('answer').className='answer error';$('sources').replaceChildren();$('timing').textContent='';$('result').hidden=false}
 finally{button.disabled=false;setTimeout(()=>{$('answer').className='answer'},100)}});
 </script></body></html>"""
@@ -88,8 +90,17 @@ def public_sources(sources: list[dict], answer_text: str) -> list[dict]:
     return result
 
 
-def make_handler(kb, base: SimpleNamespace, token: str):
+def make_handler(kb, base: SimpleNamespace, token: str, supplemental_kb=None, file_catalog=None):
     lock = threading.Lock()  # One GPU inference at a time on this L4.
+    page = PAGE
+    if supplemental_kb is not None:
+        page = PAGE.replace(
+            '<button id="submit"',
+            '<label for="scope">Где искать</label><select id="scope">'
+            '<option value="core">Основная база</option>'
+            '<option value="supplemental">Архив и специальные документы</option>'
+            '</select><button id="submit"',
+        )
 
     class Handler(BaseHTTPRequestHandler):
         def send_bytes(self, status: HTTPStatus, content: bytes, content_type: str):
@@ -108,7 +119,7 @@ def make_handler(kb, base: SimpleNamespace, token: str):
 
         def do_GET(self):
             if self.path == "/":
-                self.send_bytes(HTTPStatus.OK, PAGE.encode(), "text/html; charset=utf-8")
+                self.send_bytes(HTTPStatus.OK, page.encode(), "text/html; charset=utf-8")
             elif self.path == "/health":
                 self.send_json(HTTPStatus.OK, {"ready": True, "chunks": len(kb.documents)})
             else:
@@ -131,17 +142,34 @@ def make_handler(kb, base: SimpleNamespace, token: str):
                 question = data.get("question", "")
                 language = data.get("language", "auto")
                 depth = data.get("depth", "normal")
+                scope = data.get("scope", "core")
                 if not isinstance(question, str) or not 1 <= len(question.strip()) <= 1500:
                     raise ValueError("Вопрос должен содержать от 1 до 1500 символов")
                 question = question.strip()
                 if language not in LANGUAGES or depth not in DEPTHS:
                     raise ValueError("Неизвестный язык или глубина поиска")
+                if scope not in ("core", "supplemental") or (
+                    scope == "supplemental" and supplemental_kb is None
+                ):
+                    raise ValueError("Область поиска недоступна")
             except (ValueError, AttributeError, TypeError):
                 return self.send_json(HTTPStatus.BAD_REQUEST, {"error": "Некорректный запрос"})
             if not lock.acquire(blocking=False):
                 return self.send_json(HTTPStatus.SERVICE_UNAVAILABLE, {"error": "Бот отвечает на другой вопрос. Повторите через минуту."})
             try:
-                result = answer(kb, question, question_args(base, language, depth))
+                file_result = find_file(question, file_catalog, scope) if file_catalog is not None else None
+                if file_result is not None:
+                    message, files = file_result
+                    return self.send_json(HTTPStatus.OK, {
+                        "answer": message, "sources": [],
+                        "files": [{"title": file["title"], "url": file["url"]} for file in files],
+                    })
+                settings = question_args(base, language, depth)
+                selected_kb = kb
+                if scope == "supplemental":
+                    settings.mode = "bm25"
+                    selected_kb = supplemental_kb
+                result = answer(selected_kb, question, settings)
                 self.send_json(HTTPStatus.OK, {
                     "answer": result["answer"], "sources": public_sources(result["sources"], result["answer"]),
                     "retrieval_seconds": result["retrieval_seconds"],
@@ -159,6 +187,8 @@ def make_handler(kb, base: SimpleNamespace, token: str):
 def main():
     parser = argparse.ArgumentParser(description="Локальный веб-интерфейс к индексу НГТУ")
     parser.add_argument("--index", required=True)
+    parser.add_argument("--supplemental-chunks", help="JSONL для адресного поиска по архивным материалам")
+    parser.add_argument("--file-catalog", type=Path, help="JSONL каталога оригиналов")
     parser.add_argument("--token-file", required=True)
     parser.add_argument("--host", default="127.0.0.1")
     parser.add_argument("--port", type=int, default=8080)
@@ -175,7 +205,15 @@ def main():
                            source_folder=None, document_id=None, kind=None,
                            llm_model=args.llm_model, ollama_url=args.ollama_url)
     kb = load_kb(base)
-    server = ThreadingHTTPServer((args.host, args.port), make_handler(kb, base, token))
+    supplemental_kb = None
+    if args.supplemental_chunks:
+        supplemental_kb = load_kb(SimpleNamespace(chunks=args.supplemental_chunks, mode="bm25"))
+    file_catalog = None
+    if args.file_catalog:
+        with args.file_catalog.open(encoding="utf-8") as stream:
+            file_catalog = [json.loads(line) for line in stream]
+    server = ThreadingHTTPServer((args.host, args.port),
+                                 make_handler(kb, base, token, supplemental_kb, file_catalog))
     LOG.info("NNTU chat ready: %s chunks, %s:%s", len(kb.documents), args.host, args.port)
     server.serve_forever()
 
