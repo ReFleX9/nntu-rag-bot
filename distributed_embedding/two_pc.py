@@ -98,7 +98,11 @@ def worker(args: argparse.Namespace) -> None:
                "--chunks", str(source), "--out", str(output),
                "--device", args.device, "--batch-size", str(args.batch_size),
                "--model-dir", str(model)]
-    subprocess.run(command, check=True)
+    if args.stop_file:
+        command.extend(["--stop-file", str(args.stop_file.resolve())])
+    code = subprocess.run(command).returncode
+    if code:
+        raise SystemExit(code)
     result = {"plan_sha256": digest(folder / "plan.json"), "part": args.part,
               "part_sha256": part["sha256"],
               "model_sha256": digest(model / "model.safetensors"),
@@ -192,6 +196,7 @@ def main() -> None:
     run.add_argument("--out", type=Path, required=True)
     run.add_argument("--device", choices=("cpu", "cuda", "auto"), default="auto")
     run.add_argument("--batch-size", type=int, default=4)
+    run.add_argument("--stop-file", type=Path)
     run.set_defaults(run=worker)
     join = commands.add_parser("merge")
     join.add_argument("--folder", type=Path, required=True)

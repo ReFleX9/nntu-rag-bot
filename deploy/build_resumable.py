@@ -75,6 +75,7 @@ def main() -> None:
     parser.add_argument("--shard-size", type=int, default=256)
     parser.add_argument("--batch-size", type=int, default=16)
     parser.add_argument("--device", choices=("cpu", "cuda", "auto"), default="cuda")
+    parser.add_argument("--stop-file", type=Path)
     parser.add_argument("--model-dir", type=Path,
                         help="Local copy of the pinned Qwen model; index metadata keeps its canonical ID")
     args = parser.parse_args()
@@ -115,6 +116,9 @@ def main() -> None:
     with source.open(encoding="utf-8-sig") as stream:
         number = 0
         while True:
+            if args.stop_file and args.stop_file.exists():
+                print(f"PAUSED: saved {total}/{total_rows} vectors", flush=True)
+                raise SystemExit(42)
             lines = []
             for _ in range(args.shard_size):
                 line = stream.readline()
