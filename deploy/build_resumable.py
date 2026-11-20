@@ -74,6 +74,9 @@ def main() -> None:
     parser.add_argument("--out", required=True, type=Path)
     parser.add_argument("--shard-size", type=int, default=256)
     parser.add_argument("--batch-size", type=int, default=16)
+    parser.add_argument("--device", choices=("cpu", "cuda", "auto"), default="cuda")
+    parser.add_argument("--model-dir", type=Path,
+                        help="Local copy of the pinned Qwen model; index metadata keeps its canonical ID")
     args = parser.parse_args()
     if args.shard_size < 1 or args.batch_size < 1:
         parser.error("shard-size and batch-size must be positive")
@@ -88,8 +91,13 @@ def main() -> None:
                              max_length=2400,
                              instruction="Retrieve the passage that directly answers the question about Nizhny Novgorod State Technical University.")
     spec = {"backend": "qwen3_sentence_transformers", **vars(config)}
+    model_hashes = None
+    if args.model_dir:
+        model_dir = args.model_dir.resolve()
+        model_hashes = {name: sha256_file(model_dir / name)
+                        for name in ("model.safetensors", "tokenizer.json")}
     identity = {"source_sha256": source_hash, "shard_size": args.shard_size,
-                "embedding": spec}
+                "embedding": spec, "model_hashes": model_hashes}
     identity_path = root / "job.json"
     if identity_path.exists():
         if json.loads(identity_path.read_text(encoding="utf-8")) != identity:
@@ -123,8 +131,14 @@ def main() -> None:
                 print(f"Resuming after {shard.name}", flush=True)
             else:
                 if embedder is None:
-                    embedder = QwenEmbeddings(config, device="cuda",
-                                              batch_size=args.batch_size)
+                    load_config = EmbeddingConfig(**vars(config))
+                    if args.model_dir:
+                        load_config.model = str(model_dir)
+                        load_config.revision = None
+                    embedder = QwenEmbeddings(load_config, device=args.device,
+                                              batch_size=args.batch_size,
+                                              local_files_only=bool(args.model_dir))
+                    embedder.config = config
                 with tempfile.NamedTemporaryFile(mode="w", encoding="utf-8",
                                                  suffix=".jsonl", dir=root,
                                                  delete=False) as temporary:

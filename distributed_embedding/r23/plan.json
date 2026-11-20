@@ -1,0 +1,22 @@
+{
+  "format": 1,
+  "source_filename": "core.jsonl",
+  "source_rows": 16173,
+  "source_sha256": "a387d184759035e9bbe57cb095c24ab866695378906b7be6938bdf46ba643185",
+  "parts": [
+    {
+      "name": "part-00.jsonl",
+      "archive": "part-00.jsonl.gz",
+      "rows": 8086,
+      "sha256": "48715165a0a92c2e841191eb196f47a7a4ace23adbab5cfbef3524f5590a42fc",
+      "archive_sha256": "44886b43a59fc586b8d4c86a94b48bd0f30e11d61c0b5888f63c4dad68cafb0c"
+    },
+    {
+      "name": "part-01.jsonl",
+      "archive": "part-01.jsonl.gz",
+      "rows": 8087,
+      "sha256": "c7a50daa597eaa608497c7fb280335231a16d93a3da0381c218010e1d404c1d6",
+      "archive_sha256": "2c23404c794d6c7ad7e60d7d763a637a67a294851e5408b5bb276911af348707"
+    }
+  ]
+}
