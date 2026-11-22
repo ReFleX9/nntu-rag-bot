@@ -76,10 +76,12 @@ def main() -> None:
     parser.add_argument("--batch-size", type=int, default=16)
     parser.add_argument("--device", choices=("cpu", "cuda", "auto"), default="cuda")
     parser.add_argument("--stop-file", type=Path)
+    parser.add_argument("--start-shard", type=int, default=0,
+                        help="Start at this shard when earlier checkpoints will be copied from another computer")
     parser.add_argument("--model-dir", type=Path,
                         help="Local copy of the pinned Qwen model; index metadata keeps its canonical ID")
     args = parser.parse_args()
-    if args.shard_size < 1 or args.batch_size < 1:
+    if args.shard_size < 1 or args.batch_size < 1 or args.start_shard < 0:
         parser.error("shard-size and batch-size must be positive")
     source = args.chunks.resolve()
     root = args.out.resolve()
@@ -129,6 +131,10 @@ def main() -> None:
                 break
             shard = root / f"shard_{number:05d}"
             digest = hashlib.sha256("".join(lines).encode("utf-8")).hexdigest()
+            if number < args.start_shard:
+                total += len(lines)
+                number += 1
+                continue
             if shard.exists():
                 if not valid_shard(shard, digest):
                     raise ValueError(f"Incomplete or damaged checkpoint: {shard}")
@@ -161,6 +167,9 @@ def main() -> None:
             shards.append(shard)
             total += len(lines)
             number += 1
+    if args.start_shard and len(shards) != number:
+        print(f"PARTIAL: built shards {args.start_shard}..{number-1}; copy shards 0..{args.start_shard-1} from the other computer before final merge", flush=True)
+        return
     if not (root / "index" ).exists():
         merge(shards, root / "index", source, spec)
     print(f"DONE {total} vectors", flush=True)

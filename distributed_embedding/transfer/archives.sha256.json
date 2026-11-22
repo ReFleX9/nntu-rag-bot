@@ -1,0 +1,10 @@
+{
+  "part0_complete.zip": {
+    "bytes": 69697662,
+    "sha256": "520a4911ec0f8521d2fd9f1c7d740e64ba6d3063f1efbf253c51d8520c81eb9f"
+  },
+  "part1_remaining.zip": {
+    "bytes": 29885985,
+    "sha256": "642d3d2a9d71ad6d8f509a35303af9ae2533a0c6c844e2cd0d41eda8a145866a"
+  }
+}

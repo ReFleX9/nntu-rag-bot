@@ -1,3 +1,4 @@
 data/nntu_site/extracted/blocks.jsonl filter=lfs diff=lfs merge=lfs -text
 data/nntu_site/extracted/chunks.jsonl filter=lfs diff=lfs merge=lfs -text
 backups/chunks_2026-11-19/*.tar.gz filter=lfs diff=lfs merge=lfs -text
+distributed_embedding/transfer/*.zip filter=lfs diff=lfs merge=lfs -text
