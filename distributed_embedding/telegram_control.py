@@ -214,7 +214,10 @@ class Bot:
         updates = self.api('getUpdates', offset=-1, timeout=0)
         if updates:
             self.offset = updates[-1]['update_id'] + 1
-        self.send('Управление расчётом запускается. ' + me['username'], self.menu())
+        try:
+            self.send('Управление расчётом запускается. ' + me['username'], self.menu())
+        except Exception:
+            LOG.warning('Owner chat unavailable yet; send /start to the bot. Worker will continue locally.')
         log = (self.out / 'worker.log').open('ab', buffering=0)
         command = [sys.executable, '-u', str(ROOT / 'distributed_embedding/two_pc.py'), 'worker',
                    '--folder', str(self.args.folder), '--part', str(self.args.part),

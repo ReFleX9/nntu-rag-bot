@@ -48,6 +48,12 @@
 *.key
 *.p12
 *.pfx
+*.dpapi
+*.token
+*.log
+*.pid
+/.build-slides/
+/output/
 .DS_Store
 Thumbs.db
 .ipynb_checkpoints/

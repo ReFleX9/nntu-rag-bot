@@ -1,0 +1,35 @@
+{
+  "version": "r23-desktop-1",
+  "chunks": 16173,
+  "source_sha256": "a387d184759035e9bbe57cb095c24ab866695378906b7be6938bdf46ba643185",
+  "files": {
+    "runtime/index/manifest.json": "ee4361051a58c6eec56301c0d3cd267151cf98435fd5285c1b2e6466025247b3",
+    "runtime/index/documents.jsonl": "520ac36c66600a7bb4c01b5ad0637d173f47e47fd5a53248ebc1d05c5451c95b",
+    "runtime/index/index.faiss": "9c208c6672aecc6f27b3746ad2408d2b971a9410ea635a0df762795446973898",
+    "runtime/file_catalog.jsonl": "8f1e239d9e83a27375d87a78368c316d3488301f197d4d4c9c700bc9afc117b6",
+    "Install.cmd": "9575a57157393b8f7a327301dcae68504757e639deb44f7a0bb24e5aef62ebfe",
+    "Start.cmd": "9240473f123180a18e0e44889ac6aa82d1657e59c7014a5356a1f496d5b4c910",
+    "README.md": "06b341ad6d8423f3832413d996a7e79ac3983d2b5e638b9c4ec26b0324ad6ca6",
+    "desktop_chat/launcher.py": "7eab2da9ff2ea35d0e45d5e8146213d15772a1ea7e2c35af2d501109073a0bd4",
+    "desktop_chat/server.py": "c0b4493dcc7e1ab00ceaf021ef8f91a018b24e9ab79e49c4cb9ea8a9b77ac04c",
+    "desktop_chat/install.py": "635f7b9809823e3facf687f17496f2e0a6371fbf9f3368e9bf51d684aa99c4a9",
+    "desktop_chat/README.md": "1fba7e52a2e3f39aaab3a3e998b10ed65224cfcb89f8336724c29b56be5f8c8d",
+    "desktop_chat/nntu.ico": "465e7e13e0e0e123d2065a76f27479ca9daf991c30e331681baa1feb3875ba97",
+    "rag_hybrid_langchain/rag_hybrid/chat_web.py": "8e47d413e2adb6244001f559b2165e4138b0a2e727c51b7e3646bf316d9afc5c",
+    "rag_hybrid_langchain/rag_hybrid/kb.py": "15ffe5df852051657b320e1200af9567fc163dc98451258ee2e9aec13d2a26ce",
+    "rag_hybrid_langchain/rag_hybrid/corpus.py": "3d023368419ab2b52f3d7f028c0ab6c0410803474bb42a45f60d6acd970d14b3",
+    "rag_hybrid_langchain/rag_hybrid/retrieval.py": "36abcfd99d359576318d4018dbdccf5bab345aa2c5e0eff5974116ce89a8b7b9",
+    "rag_hybrid_langchain/rag_hybrid/embeddings.py": "211acb7594417b84ac9c01ac36cd344ed1f9e43e2260800c72cb662e445df13b",
+    "rag_hybrid_langchain/rag_hybrid/file_lookup.py": "f6138995fdccb122490defba18d6a96fcc1b7d971ca8845d1f4ee84eb67e39cf",
+    "rag_hybrid_langchain/rag_hybrid/nntu_languages.py": "be1ef00b7d20d41b5463b08244dc0d7d960c5f22c863acb35e2406476bbb444e",
+    "rag_hybrid_langchain/rag_hybrid/requirements.txt": "fbba9187f7d8a6d8d9df951dddb3624e2a4acd7a991d9b7afbcec4307f1755d8",
+    "rag_hybrid_langchain/rag_hybrid/requirements-search.txt": "21e88840efe27c74304cc844d6f714d333ce1de670a33080b968536308303e8b",
+    "rag_hybrid_langchain/rag_hybrid/static/index.html": "43ffbbeb9cda145861e752c3af5511d2aa19d26e828b8d4a70e3caf7e437ff8d",
+    "rag_hybrid_langchain/rag_hybrid/static/nntu-mark.png": "45c0ee37dd214ded3859ee9598894afa98d8478a0b44e5d12efeed9d532933d5"
+  },
+  "embedding_revision": "97b0c614be4d77ee51c0cef4e5f07c00f9eb65b3",
+  "embedding_files": {
+    "model.safetensors": "0437e45c94563b09e13cb7a64478fc406947a93cb34a7e05870fc8dcd48e23fd",
+    "tokenizer.json": "def76fb086971c7867b829c23a26261e38d9d74e02139253b38aeb9df8b4b50a"
+  }
+}
