@@ -33,9 +33,9 @@ def read_chunks(path: str | Path) -> list[dict[str, Any]]:
                     raise ValueError(f"повторный chunk_id: {row['chunk_id']}")
                 if type(row.get("indexable")) is not bool:
                     raise ValueError("indexable должен быть bool")
-                if type(row.get("page")) is not int or row["page"] < 1:
+                if row.get("page") is not None and (type(row["page"]) is not int or row["page"] < 1):
                     raise ValueError("page должен быть положительным целым числом")
-                if row.get("page_count") is not None and row["page"] > row["page_count"]:
+                if row.get("page") is not None and row.get("page_count") is not None and row["page"] > row["page_count"]:
                     raise ValueError("page превышает page_count")
                 seen.add(row["chunk_id"])
                 rows.append(row)

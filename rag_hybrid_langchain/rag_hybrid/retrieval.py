@@ -301,7 +301,8 @@ class KnowledgeBase:
                     walked.add(other.metadata["chunk_id"])
                     if other.metadata["document_id"] != hit.metadata["document_id"]:
                         break
-                    if abs(other.metadata["page"] - hit.metadata["page"]) > 1:
+                    if (other.metadata["page"] is None or hit.metadata["page"] is None
+                            or abs(other.metadata["page"] - hit.metadata["page"]) > 1):
                         break
                     section_a = hit.metadata.get("section_path") or hit.metadata.get("section_title")
                     section_b = other.metadata.get("section_path") or other.metadata.get("section_title")
