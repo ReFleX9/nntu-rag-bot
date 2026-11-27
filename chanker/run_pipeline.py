@@ -39,7 +39,7 @@ JOIN_WRAPPED_LINES = True
 INCLUDE_PARTIAL = False
 
 # Локальный токенизатор embedding-модели.
-TOKENIZER_PATH = r"C:\Users\kiril\.cache\huggingface\hub\models--Qwen--Qwen3-Embedding-0.6B\snapshots\97b0c614be4d77ee51c0cef4e5f07c00f9eb65b3"
+TOKENIZER_PATH = str(BASE_DIR.parent / 'vendor/nntu-models/qwen3-embedding-0.6b')
 MAX_CHUNK_TOKENS = 1600
 
 

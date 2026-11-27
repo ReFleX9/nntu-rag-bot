@@ -1,7 +1,7 @@
 torch>=2.6,<3
-transformers==4.53.3
+transformers>=4.57,<5
 accelerate>=1.0,<2
-sentencepiece==0.2.0
+sentencepiece>=0.2.1,<0.3
 protobuf>=4.25,<6
-PyMuPDF>=1.24,<2
+PyMuPDF>=1.24,<3
 razdel==0.5.0

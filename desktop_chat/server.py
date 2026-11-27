@@ -4,9 +4,10 @@ import json
 import secrets
 import sys
 from pathlib import Path
+from runtime import load_config
 
 ROOT = Path(__file__).resolve().parents[1]
-config = json.loads((ROOT / 'work/desktop_chat.json').read_text(encoding='utf-8'))
+config = load_config()
 sys.path.insert(0, str(ROOT / 'rag_hybrid_langchain/rag_hybrid'))
 from embeddings import EmbeddingConfig, QwenEmbeddings
 from retrieval import KnowledgeBase

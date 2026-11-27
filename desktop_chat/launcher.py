@@ -10,6 +10,7 @@ import tkinter as tk
 from tkinter import messagebox
 import urllib.request
 from pathlib import Path
+from runtime import load_config
 
 ROOT = Path(__file__).resolve().parents[1]
 CONFIG = ROOT / 'work/desktop_chat.json'
@@ -21,7 +22,7 @@ def main():
     if ctypes.windll.kernel32.GetLastError() == 183:
         ctypes.windll.user32.MessageBoxW(None, 'Чат НГТУ уже запущен. Откройте его окно на панели задач.', 'НГТУ', 64)
         return
-    config = json.loads(CONFIG.read_text(encoding='utf-8'))
+    config = load_config()
     # Do not accidentally attach to another user's already running runtime.
     for port in (config['chat_port'], config['ollama_port']):
         with socket.socket() as probe:

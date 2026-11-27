@@ -4,6 +4,7 @@
 # Vendored Python packages, OCR binaries and local model files
 /vendor/
 /work/
+/runtime/
 /nntu-index.tar.gz
 **/.venv/
 **/venv/
@@ -57,6 +58,7 @@
 .DS_Store
 Thumbs.db
 .ipynb_checkpoints/
+.pytest_cache/
 
 # Publish the extracted NNTU text corpus and its audit reports. The original
 # downloads, raw crawl and organized hard-link view stay local.

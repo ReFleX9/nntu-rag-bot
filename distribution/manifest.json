@@ -1,8 +1,8 @@
 {
   "file": "nntu-desktop-win.zip",
-  "bytes": 70660858,
-  "sha256": "38aa667d3ec40313e1d6eee511a01cbecb6d538ddc8646a8f22e1424fb919598",
-  "version": "r23-desktop-1",
+  "bytes": 70663847,
+  "sha256": "57e8bbb853fb413bcfdd6c3cfd64e159dd4131baabbd35dac918664236d0150f",
+  "version": "r23-consolidated-1",
   "chunks": 16173,
-  "files": 24
+  "files": 26
 }

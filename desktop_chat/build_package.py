@@ -27,7 +27,7 @@ def main():
     files['runtime/file_catalog.jsonl'] = args.catalog
     for name in ('Install.cmd', 'Start.cmd', 'README.md'):
         files[name] = ROOT / name
-    for name in ('launcher.py', 'server.py', 'install.py', 'README.md', 'nntu.ico'):
+    for name in ('launcher.py', 'server.py', 'install.py', 'setup_local.py', 'runtime.py', 'README.md', 'nntu.ico'):
         files['desktop_chat/' + name] = ROOT / 'desktop_chat' / name
     module = ROOT / 'rag_hybrid_langchain/rag_hybrid'
     for name in ('chat_web.py', 'kb.py', 'corpus.py', 'retrieval.py', 'embeddings.py',
@@ -35,7 +35,7 @@ def main():
         files['rag_hybrid_langchain/rag_hybrid/' + name] = module / name
     for name in ('index.html', 'nntu-mark.png'):
         files['rag_hybrid_langchain/rag_hybrid/static/' + name] = module / 'static' / name
-    payload = {'version': 'r23-desktop-1', 'chunks': manifest['count'],
+    payload = {'version': 'r23-consolidated-1', 'chunks': manifest['count'],
                'source_sha256': manifest['source_sha256'],
                'files': {name: digest(path) for name, path in files.items()},
                'embedding_revision': manifest['embedding']['revision'],

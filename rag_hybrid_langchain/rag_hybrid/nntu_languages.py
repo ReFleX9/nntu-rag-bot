@@ -12,6 +12,15 @@ NO_CONTEXT = {
 
 
 def translate_query(llm, question: str, requested_language: str) -> tuple[str, str]:
+    if requested_language == 'ru':
+        return 'ru', question
+    # Russian is the corpus language. Do not ask a generative translator to
+    # classify an already Russian query (including abbreviations such as ИНЭУ).
+    russian = len(re.findall(r'[А-Яа-яЁё]', question))
+    latin = len(re.findall(r'[A-Za-z]', question))
+    foreign_cyrillic = re.sub(r'[А-Яа-яЁё]', '', ''.join(re.findall(r'[\u0400-\u04ff]', question)))
+    if requested_language == 'auto' and russian >= 3 and russian > latin and not foreign_cyrillic:
+        return 'ru', question
     instruction = (
         "Определи язык вопроса: ru — русский, en — английский, tk — туркменский, "
         "uz — узбекский. Для других языков укажи en. Переведи вопрос на русский "
